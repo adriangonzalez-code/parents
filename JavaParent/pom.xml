@@ -1,0 +1,192 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.driagon</groupId>
+    <artifactId>java-parent</artifactId>
+    <version>21.35.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>java-parent</name>
+    <description>Parent POM para todos los proyectos APIs REST con Spring Boot y Spring Cloud</description>
+
+    <modules>
+        <!-- Aquí puedes referenciar los módulos hijos si es un proyecto multi-módulo -->
+    </modules>
+
+    <properties>
+        <!-- Codificación -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Java version -->
+        <java.version>21</java.version>
+        <!-- Spring Boot y Spring Cloud BOMs -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- Versiones de dependencias -->
+        <spring-boot.version>3.5.0</spring-boot.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <lombok.version>1.18.28</lombok.version>
+        <jacoco.version>0.8.10</jacoco.version>
+        <springdoc-openapi.version>2.5.0</springdoc-openapi.version>
+        <commons-io.version>2.19.0</commons-io.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <versions-maven-plugin.version>2.16.0</versions-maven-plugin.version>
+        <maven-processor-plugin.version>4.5.1</maven-processor-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <spring-boot.logging.starter.version>1.0.0-SNAPSHOT</spring-boot.logging.starter.version>
+        <spring-boot.error-handler.starter.version>1.0.0-SNAPSHOT</spring-boot.error-handler.starter.version>
+        <spring-boot.health-check-starter.version>1.0.0-SNAPSHOT</spring-boot.health-check-starter.version>
+        <jjwt.version>0.11.5</jjwt.version>
+        <jasypt.version>3.0.5</jasypt.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Importar BOM de Spring Boot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Importar BOM de Spring Cloud -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+            </dependency>
+
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- MapStruct para mapeos automáticos -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.driagon.services</groupId>
+                <artifactId>spring-boot-logging-starter</artifactId>
+                <version>${spring-boot.logging.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.driagon.services</groupId>
+                <artifactId>spring-boot-error-handler-starter</artifactId>
+                <version>${spring-boot.error-handler.starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.driagon.services</groupId>
+                <artifactId>spring-boot-health-check-starter</artifactId>
+                <version>${spring-boot.health-check-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <!-- Swagger/OpenAPI -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Plugin de compilación de Java -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+
+                <!-- Plugin para empaquetar Spring Boot -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+
+                <!-- Plugin de chequeo de dependencias -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-maven-plugin.version}</version>
+                </plugin>
+
+                <!-- Plugin para generación de código Lombok/MapStruct -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-processor-plugin</artifactId>
+                    <version>${maven-processor-plugin.version}</version>
+                </plugin>
+
+                <!-- Plugin Jacoco para cobertura de código -->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
