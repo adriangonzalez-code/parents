@@ -38,10 +38,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
         <!-- SPRING CLOUD STARTERS -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
