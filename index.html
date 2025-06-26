@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Arquitectura de Dependencias Maven - Driagon</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f8f9fa;
+            }
+
+            .container {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            h1 {
+                color: #2c3e50;
+                border-bottom: 3px solid #3498db;
+                padding-bottom: 10px;
+                margin-bottom: 30px;
+            }
+
+            h2 {
+                color: #34495e;
+                border-left: 4px solid #3498db;
+                padding-left: 15px;
+                margin-top: 40px;
+                margin-bottom: 20px;
+            }
+
+            h3 {
+                color: #2c3e50;
+                margin-top: 30px;
+                margin-bottom: 15px;
+            }
+
+            .architecture-diagram {
+                background-color: #ecf0f1;
+                padding: 20px;
+                border-radius: 8px;
+                margin: 20px 0;
+                text-align: center;
+            }
+
+            .pom-box {
+                background-color: #fff;
+                border: 2px solid #3498db;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 10px;
+                display: inline-block;
+                min-width: 200px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .parent-pom {
+                background-color: #e8f4fd;
+                border-color: #2980b9;
+            }
+
+            .child-pom {
+                background-color: #f8f9fa;
+                border-color: #27ae60;
+            }
+
+            .arrow {
+                font-size: 24px;
+                color: #3498db;
+                margin: 0 10px;
+            }
+
+            .code-block {
+                background-color: #2c3e50;
+                color: #ecf0f1;
+                padding: 15px;
+                border-radius: 5px;
+                overflow-x: auto;
+                margin: 15px 0;
+                font-family: 'Courier New', monospace;
+            }
+
+            .dependency-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                background-color: white;
+            }
+
+            .dependency-table th {
+                background-color: #3498db;
+                color: white;
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            .dependency-table td {
+                padding: 10px;
+                border: 1px solid #ddd;
+            }
+
+            .dependency-table tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+
+            .benefit-list {
+                background-color: #d5f4e6;
+                border-left: 4px solid #27ae60;
+                padding: 15px;
+                margin: 20px 0;
+            }
+
+            .warning-box {
+                background-color: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 5px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+
+            .info-box {
+                background-color: #e3f2fd;
+                border: 1px solid #90caf9;
+                border-radius: 5px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+
+            .version-badge {
+                background-color: #3498db;
+                color: white;
+                padding: 3px 8px;
+                border-radius: 12px;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
+
+            .highlight {
+                background-color: #fff3cd;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🏗️ Arquitectura de Dependencias Maven - Driagon</h1>
+
+            <div class="info-box">
+                <strong>📋 Resumen Ejecutivo:</strong> Esta documentación describe la arquitectura de gestión de dependencias
+                Maven diseñada para estandarizar y simplificar el desarrollo de APIs REST con Spring Boot y Spring Cloud en el
+                ecosistema Driagon.
+            </div>
+
+            <h2>🎯 Objetivos y Filosofía</h2>
+            <p>La arquitectura de dependencias Driagon está diseñada con los siguientes principios fundamentales:</p>
+
+            <div class="benefit-list">
+                <ul>
+                    <li><strong>Centralización de Versiones:</strong> Todas las versiones de dependencias se gestionan desde un
+                        único punto (java-parent)
+                    </li>
+                    <li><strong>Compatibilidad Garantizada:</strong> Las versiones están probadas y certificadas para trabajar
+                        juntas
+                    </li>
+                    <li><strong>Simplicidad de Uso:</strong> Los desarrolladores solo necesitan agregar las dependencias
+                        categorizadas
+                    </li>
+                    <li><strong>Mantenimiento Eficiente:</strong> Los cambios de versión se propagan automáticamente a todos los
+                        proyectos
+                    </li>
+                    <li><strong>Segregación de Responsabilidades:</strong> Cada POM tiene una responsabilidad específica y bien
+                        definida
+                    </li>
+                </ul>
+            </div>
+
+            <h2>🏛️ Arquitectura General</h2>
+
+            <div class="architecture-diagram">
+                <div class="pom-box parent-pom">
+                    <strong>java-parent</strong><br>
+                    <span class="version-badge">21.35.1-SNAPSHOT</span><br>
+                    <small>POM Padre - Gestión de Versiones</small>
+                </div>
+
+                <div class="arrow">⬇️</div>
+
+                <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                    <div class="pom-box child-pom">
+                        <strong>spring-boot-common-dependencies</strong><br>
+                        <span class="version-badge">1.0.0-SNAPSHOT</span><br>
+                        <small>Spring Boot & Cloud</small>
+                    </div>
+
+                    <div class="pom-box child-pom">
+                        <strong>third-party-dependencies</strong><br>
+                        <span class="version-badge">1.0.0-SNAPSHOT</span><br>
+                        <small>Dependencias de Terceros</small>
+                    </div>
+
+                    <div class="pom-box child-pom">
+                        <strong>spring-boot-testing-dependencies</strong><br>
+                        <span class="version-badge">1.0.0-SNAPSHOT</span><br>
+                        <small>Testing & QA</small>
+                    </div>
+                </div>
+            </div>
+
+            <h2>🌟 java-parent: El Corazón de la Arquitectura</h2>
+
+            <p>El <code>java-parent</code> es el POM raíz que actúa como el <strong>centro de control de versiones</strong> para
+                todo el ecosistema. Su responsabilidad principal es mantener la <span class="highlight">compatibilidad y consistencia</span>
+                entre todas las dependencias.</p>
+
+            <h3>📋 Características Principales</h3>
+
+            <table class="dependency-table">
+                <thead>
+                <tr>
+                    <th>Característica</th>
+                    <th>Valor</th>
+                    <th>Descripción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>GroupId</strong></td>
+                    <td>com.driagon</td>
+                    <td>Identificador único de la organización</td>
+                </tr>
+                <tr>
+                    <td><strong>ArtifactId</strong></td>
+                    <td>java-parent</td>
+                    <td>Identificador del POM padre</td>
+                </tr>
+                <tr>
+                    <td><strong>Version</strong></td>
+                    <td>21.35.1-SNAPSHOT</td>
+                    <td>Versión que indica Java 21 + Spring Boot 3.5 + incremento 1</td>
+                </tr>
+                <tr>
+                    <td><strong>Java Version</strong></td>
+                    <td>21</td>
+                    <td>Versión LTS de Java utilizada</td>
+                </tr>
+                <tr>
+                    <td><strong>Spring Boot</strong></td>
+                    <td>3.5.0</td>
+                    <td>Versión del framework principal</td>
+                </tr>
+                <tr>
+                    <td><strong>Spring Cloud</strong></td>
+                    <td>2025.0.0</td>
+                    <td>Versión del ecosistema de microservicios</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h3>🔧 Dependencias Gestionadas</h3>
+
+            <p>El <code>dependencyManagement</code> del java-parent incluye:</p>
+
+            <div class="code-block">
+                &lt;!-- BOMs Principales --&gt;
+                <br>
+                - Spring Boot Dependencies BOM (3.5.0)
+                <br>
+                - Spring Cloud Dependencies BOM (2025.0.0)
+
+                <br><br>
+                &lt;!-- Herramientas de Desarrollo --&gt;
+                <br>
+                - Lombok (1.18.28)
+                <br>
+                - MapStruct (1.5.5.Final)
+
+                <br><br>
+                &lt;!-- Starters Personalizados Driagon --&gt;
+                <br>
+                - spring-boot-logging-starter
+                <br>
+                - spring-boot-error-handler-starter
+                <br>
+                - spring-boot-health-check-starter
+
+                <br><br>
+                &lt;!-- Librerías de Terceros --&gt;
+                <br>
+                - Apache Commons (Lang3, Collections4, IO)
+                <br>
+                - SpringDoc OpenAPI (2.5.0)
+                <br>
+                - JJWT (0.11.5)
+                <br>
+                - Jasypt (3.0.5)
+            </div>
+
+            <h3>🔌 Plugins Gestionados</h3>
+
+            <table class="dependency-table">
+                <thead>
+                <tr>
+                    <th>Plugin</th>
+                    <th>Versión</th>
+                    <th>Propósito</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>maven-compiler-plugin</td>
+                    <td>3.11.0</td>
+                    <td>Compilación de código Java</td>
+                </tr>
+                <tr>
+                    <td>spring-boot-maven-plugin</td>
+                    <td>3.5.0</td>
+                    <td>Empaquetado de aplicaciones Spring Boot</td>
+                </tr>
+                <tr>
+                    <td>versions-maven-plugin</td>
+                    <td>2.16.0</td>
+                    <td>Gestión y actualización de versiones</td>
+                </tr>
+                <tr>
+                    <td>jacoco-maven-plugin</td>
+                    <td>0.8.10</td>
+                    <td>Análisis de cobertura de código</td>
+                </tr>
+                <tr>
+                    <td>maven-processor-plugin</td>
+                    <td>4.5.1</td>
+                    <td>Procesamiento de anotaciones (Lombok/MapStruct)</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h2>🚀 spring-boot-common-dependencies</h2>
+
+            <p>Este POM concentra todas las <strong>dependencias nativas del ecosistema Spring</strong>, proporcionando los
+                starters más comunes para el desarrollo de APIs REST.</p>
+
+            <div class="info-box">
+                <strong>🎯 Objetivo:</strong> Proporcionar una base sólida con los componentes esenciales de Spring Boot y Spring
+                Cloud para desarrollo de microservicios.
+            </div>
+
+            <h3>📦 Dependencias Incluidas</h3>
+
+            <table class="dependency-table">
+                <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Dependencia</th>
+                    <th>Propósito</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td rowspan="4"><strong>Spring Boot Core</strong></td>
+                    <td>spring-boot-starter</td>
+                    <td>Núcleo básico (sin logging por defecto)</td>
+                </tr>
+                <tr>
+                    <td>spring-boot-starter-web</td>
+                    <td>Desarrollo de APIs REST con Spring MVC</td>
+                </tr>
+                <tr>
+                    <td>spring-boot-starter-log4j2</td>
+                    <td>Sistema de logging con Log4j2</td>
+                </tr>
+                <tr>
+                    <td>spring-boot-starter-aop</td>
+                    <td>Programación orientada a aspectos</td>
+                </tr>
+                <tr>
+                    <td rowspan="2"><strong>Spring Cloud</strong></td>
+                    <td>spring-cloud-starter-openfeign</td>
+                    <td>Cliente HTTP declarativo para microservicios</td>
+                </tr>
+                <tr>
+                    <td>spring-cloud-starter-bootstrap</td>
+                    <td>Configuración de bootstrap para microservicios</td>
+                </tr>
+                <tr>
+                    <td><strong>Observabilidad</strong></td>
+                    <td>micrometer-tracing-bridge-brave</td>
+                    <td>Trazabilidad distribuida con Brave</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-box">
+                <strong>⚠️ Nota Importante:</strong> Se excluye explícitamente <code>spring-boot-starter-logging</code> para
+                usar Log4j2 en su lugar, proporcionando mejor rendimiento y configuración más flexible.
+            </div>
+
+            <h2>🌐 third-party-dependencies</h2>
+
+            <p>Centraliza las <strong>dependencias de terceros más utilizadas</strong> en el desarrollo de APIs REST, evitando
+                la repetición y asegurando versiones consistentes.</p>
+
+            <h3>📚 Librerías Incluidas</h3>
+
+            <table class="dependency-table">
+                <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Dependencia</th>
+                    <th>Versión</th>
+                    <th>Uso Principal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td rowspan="3"><strong>Apache Commons</strong></td>
+                    <td>commons-lang3</td>
+                    <td>3.12.0</td>
+                    <td>Utilidades para manipulación de strings, fechas, etc.</td>
+                </tr>
+                <tr>
+                    <td>commons-collections4</td>
+                    <td>4.4</td>
+                    <td>Estructuras de datos y algoritmos avanzados</td>
+                </tr>
+                <tr>
+                    <td>commons-io</td>
+                    <td>2.19.0</td>
+                    <td>Operaciones de entrada/salida de archivos</td>
+                </tr>
+                <tr>
+                    <td><strong>Documentación</strong></td>
+                    <td>springdoc-openapi-starter-webmvc-ui</td>
+                    <td>2.5.0</td>
+                    <td>Generación automática de documentación OpenAPI/Swagger</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h2>🧪 spring-boot-testing-dependencies</h2>
+
+            <p>Proporciona todas las herramientas necesarias para <strong>testing integral</strong> de aplicaciones Spring Boot,
+                incluyendo testing de seguridad y assertions avanzadas.</p>
+
+            <h3>🔍 Herramientas de Testing</h3>
+
+            <table class="dependency-table">
+                <thead>
+                <tr>
+                    <th>Dependencia</th>
+                    <th>Propósito</th>
+                    <th>Scope</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>spring-boot-starter-test</td>
+                    <td>Suite completa de testing para Spring Boot (JUnit 5, Mockito, TestContainers, etc.)</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>spring-security-test</td>
+                    <td>Utilidades específicas para testing de Spring Security</td>
+                    <td>test</td>
+                </tr>
+                <tr>
+                    <td>assertj-core</td>
+                    <td>Assertions fluidas y expresivas para mejor legibilidad de tests</td>
+                    <td>test</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h2>💡 Casos de Uso y Ejemplos Prácticos</h2>
+
+            <h3>🏗️ Cómo Usar la Arquitectura</h3>
+
+            <p>Para crear un nuevo proyecto Spring Boot utilizando esta arquitectura:</p>
+
+            <div class="code-block">
+                <pre>
+&lt;!-- 1. Configurar el parent POM --&gt;
+&lt;parent&gt;
+    &lt;groupId&gt;com.driagon&lt;/groupId&gt;
+    &lt;artifactId&gt;java-parent&lt;/artifactId&gt;
+    &lt;version&gt;21.35.1-SNAPSHOT&lt;/version&gt;
+&lt;/parent&gt;
+
+&lt;!-- 2. Agregar las dependencias categorizadas --&gt;
+&lt;dependencies&gt;
+    &lt;!-- Dependencias base de Spring Boot/Cloud --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.driagon&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-common-dependencies&lt;/artifactId&gt;
+        &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;pom&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Dependencias de terceros --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.driagon&lt;/groupId&gt;
+        &lt;artifactId&gt;third-party-dependencies&lt;/artifactId&gt;
+        &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;pom&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Dependencias de testing --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.driagon&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-testing-dependencies&lt;/artifactId&gt;
+        &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;pom&lt;/type&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+                </pre>
+            </div>
+
+            <h3>🎯 Beneficios Inmediatos</h3>
+
+            <div class="benefit-list">
+                <h4>Para Desarrolladores:</h4>
+                <ul>
+                    <li><strong>Configuración Instantánea:</strong> Proyecto listo para desarrollo en minutos</li>
+                    <li><strong>Sin Conflictos de Versiones:</strong> Todas las dependencias son compatibles entre sí</li>
+                    <li><strong>Herramientas Incluidas:</strong> Lombok, MapStruct, OpenAPI, Testing suite completa</li>
+                    <li><strong>Estándares Corporativos:</strong> Cumplimiento automático de las buenas prácticas</li>
+                </ul>
+
+                <h4>Para Equipos:</h4>
+                <ul>
+                    <li><strong>Consistencia:</strong> Todos los proyectos usan las mismas versiones</li>
+                    <li><strong>Mantenimiento Centralizado:</strong> Actualizaciones desde un punto único</li>
+                    <li><strong>Onboarding Rápido:</strong> Nuevos desarrolladores conocen la estructura inmediatamente</li>
+                    <li><strong>Reducción de Riesgos:</strong> Versiones probadas y certificadas</li>
+                </ul>
+            </div>
+
+            <h2>🔄 Estrategia de Versionado</h2>
+
+            <div class="info-box">
+                <strong>📝 Esquema de Versionado:</strong>
+                <code>[JAVA_VERSION].[SPRING_BOOT_MINOR].[INCREMENTO]-[ESTADO]</code>
+                <br><br>
+                <strong>Ejemplo:</strong> <code>21.35.1-SNAPSHOT</code>
+                <ul>
+                    <li><strong>21:</strong> Versión de Java</li>
+                    <li><strong>35:</strong> Versión menor de Spring Boot (3.5)</li>
+                    <li><strong>1:</strong> Incremento de la versión Driagon</li>
+                    <li><strong>SNAPSHOT:</strong> Estado de desarrollo</li>
+                </ul>
+            </div>
+
+            <h3>🚀 Proceso de Actualización</h3>
+
+            <ol>
+                <li><strong>Evaluación:</strong> Análisis de compatibilidad de nuevas versiones</li>
+                <li><strong>Testing:</strong> Pruebas exhaustivas en entorno de desarrollo</li>
+                <li><strong>Actualización del Parent:</strong> Modificación de versiones en java-parent</li>
+                <li><strong>Propagación:</strong> Los proyectos heredan automáticamente las nuevas versiones</li>
+                <li><strong>Validación:</strong> Verificación en entornos de integración</li>
+            </ol>
+
+            <h2>🛠️ Mantenimiento y Evolución</h2>
+
+            <h3>📈 Roadmap de Funcionalidades</h3>
+
+            <table class="dependency-table">
+                <thead>
+                <tr>
+                    <th>Versión</th>
+                    <th>Mejoras Planificadas</th>
+                    <th>Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>21.35.2</td>
+                    <td>Integración con Spring Boot 3.5.x, mejoras en observabilidad</td>
+                    <td>En desarrollo</td>
+                </tr>
+                <tr>
+                    <td>21.36.0</td>
+                    <td>Spring Boot 3.6.0, nuevas dependencias de seguridad</td>
+                    <td>Planificado</td>
+                </tr>
+                <tr>
+                    <td>22.x.x</td>
+                    <td>Migración a Java 22, Spring Boot 4.x</td>
+                    <td>Investigación</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h3>🔍 Monitoreo y Métricas</h3>
+
+            <p>La arquitectura incluye herramientas para monitorear el estado de las dependencias:</p>
+
+            <ul>
+                <li><strong>Versions Maven Plugin:</strong> Detección automática de actualizaciones</li>
+                <li><strong>Dependency Check:</strong> Análisis de vulnerabilidades de seguridad</li>
+                <li><strong>Jacoco Integration:</strong> Medición de cobertura de código</li>
+                <li><strong>Custom Starters:</strong> Funcionalidades específicas de Driagon</li>
+            </ul>
+
+            <h2>📞 Soporte y Contacto</h2>
+
+            <div class="info-box">
+                <strong>🏢 Equipo de Arquitectura Driagon</strong><br>
+                Para consultas, sugerencias o reportes de problemas relacionados con la arquitectura de dependencias, contacta
+                al equipo de arquitectura a través de los canales oficiales de la organización.
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Importante:</strong> No modifiques las versiones definidas en el java-parent sin coordinación previa
+                con el equipo de arquitectura. Esto puede causar incompatibilidades en otros proyectos del ecosistema.
+            </div>
+
+            <hr style="margin: 40px 0; border: none; border-top: 2px solid #ecf0f1;">
+
+            <p style="text-align: center; color: #7f8c8d; font-size: 0.9em;">
+                <strong>Documentación de Arquitectura Maven - Driagon</strong><br>
+                Versión del documento: 1.0 | Última actualización: Junio 2025<br>
+                <em>Esta documentación es un documento vivo que evoluciona con la arquitectura</em>
+            </p>
+        </div>
+    </body>
+</html>
